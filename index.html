@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: 0.5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script id="worker" type="app/worker">
+        //importScripts('https://code.jquery.com/jquery-3.4.1.min.js');
+        //importScript("/socket.io/socket.io.js")
+        /*(function (io) {
+            var socket = io();
+            let mesList = [];
+            
+            socket.on('test', (data) => {
+                console.log('data===',data)
+                megList.push(msg)
+                // $('#messages').append($('<li>').text(JSON.stringify(data)));
+            })
+            socket.on('chatMessage', (msg) => {
+                megList.push(msg)
+                // $('#messages').append($('<li>').text(JSON.stringify(msg)));
+            })
+            setInterval(() => {
+                const _mesList = megList.splice(0)
+                postMessage(..._mesList);
+            },300)
+        })(io);*/
+    </script>
+    <script>
+        // var blob = new Blob([document.querySelector('#worker').textContent]);
+        // var url = window.URL.createObjectURL(blob);
+        // var worker = new Worker('./work.js');
+
+        // worker.onmessage = function (event) {
+        //     let _msg = event.data || []
+        //     console.log('Received message ' , _msg);
+        //     doSomething(_msg);
+        // }
+
+        // worker.addEventListener('error', function (e) {
+        //     // ...
+        //     console.log([
+        //         'ERROR: Line ', e.lineno, ' in ', e.filename, ': ', e.message
+        //     ].join(''));
+        // });
+
+        ////worker.terminate();
+
+        // function doSomething(data) {
+        //     data.forEach(item => {
+        //         $('#messages').append($('<li>').text(JSON.stringify(item)));
+        //     })
+        // }
+    </script>
+    <script>
+        function createrWorkerToAjax(url, method, data){
+            const ajaxData = {
+                url,
+                method,
+                data,
+            }
+            console.log("ajaxData====",ajaxData);
+            let worker = new Worker('./ajaxWorker.js');
+            worker.postMessage(ajaxData);
+            worker.onmessage = function (event) {
+                let _msg = event.data || []
+                console.log('Received message ' , _msg);
+                worker.terminate();
+                doSomething(_msg);
+            }
+
+            worker.addEventListener('error', function (e) {
+                console.log([
+                    'ERROR: Line ', e.lineno, ' in ', e.filename, ': ', e.message
+                ].join(''));
+                worker.terminate();
+            });
+        }
+
+        function doSomething(data) {
+            // 执行任务
+            // data.forEach(item => {
+            //     $('#messages').append($('<li>').text(JSON.stringify(item)));
+            // })
+        }
+        createrWorkerToAjax('http://localhost:3001/test', 'post', {name:'brian'})
+    </script>
+    <script>
+    //   $(function () {
+    //     var socket = io();
+    //     $('form').submit(function(e) {
+    //       e.preventDefault(); // prevents page reloading
+    //       socket.emit('chat message', $('#m').val());
+    //       $('#m').val('');
+    //       return false;
+    //     });
+    //     socket.on('test', (data) => {
+    //         console.log('data===',data)
+    //         // $('#messages').append($('<li>').text(JSON.stringify(data)));
+    //     })
+    //     socket.on('chatMessage', (msg) => {
+    //         $('#messages').append($('<li>').text(JSON.stringify(msg)));
+    //     })
+    //   });
+    </script>
+  </body>
+</html>
